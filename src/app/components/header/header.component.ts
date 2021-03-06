@@ -6,10 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-
+  imgUrl = 'http://placehold.it/150x50?text=Logo';
   constructor() { }
-
   ngOnInit(): void {
   }
-
 }

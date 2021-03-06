@@ -1,0 +1,8 @@
+.crop {
+  /* hide the contents of the div (including child elements) when it is to big to fit */
+  /*... when is it too big? We will control this with the width property */
+  overflow: hidden;
+}
+div {
+  cursor: pointer;
+}
