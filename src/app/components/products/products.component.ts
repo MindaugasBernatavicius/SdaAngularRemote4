@@ -12,32 +12,41 @@ import {ProductService} from '../../services/product.service';
     <label>Filter:</label>
     <input type="text" (input)="filter($event.target.value)">
 
-    <h1>Products table:</h1>
-    <table *ngIf="products && products.length" class="table">
-      <thead>
-      <tr>
-        <th>Title</th>
-        <th>Count</th>
-        <th>Price</th>
-        <th>Stars</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor='let product of filteredProducts'>
-        <td>{{ product.title | lowercase | converttospace: '-' | converttospace: '$' }}</td>
-        <td>{{ product.count }}</td>
-        <td>{{ product.price | currency:'EUR' }}</td>
-        <td><app-star
-          [rating]="product.rating"
-          (ratingClicked)="onRatingClicked($event)"
-          (startClicked)="onStartClicked($event)"
-        >
-        </app-star></td>
-      </tr>
-      </tbody>
-    </table>
-    {{ ratingClickedMessage }}<br>
-    {{ 'Star: ' + starClicked + ' clicked' }}
+    <div class="card">
+      <div class="card-header">
+        Products table
+      </div>
+      <div class="card-body">
+        <table *ngIf="products && products.length" class="table">
+          <thead>
+          <tr>
+            <th>Title</th>
+            <th>Count</th>
+            <th>Price</th>
+            <th>Stars</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor='let product of filteredProducts'>
+            <td>{{ product.title | lowercase | converttospace: '-' | converttospace: '$' }}</td>
+            <td>{{ product.count }}</td>
+            <td>{{ product.price | currency:'EUR' }}</td>
+            <!-- parent -->
+            <td><app-star
+              [rating]="product.rating"
+              (ratingClicked)="onRatingClicked($event)"
+              (startClicked)="onStartClicked($event)"
+            >
+            </app-star></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer">
+        {{ ratingClickedMessage }}<br>
+        {{ 'Star: ' + starClicked + ' clicked' }}
+      </div>
+    </div>
   `
 })
 export class ProductsComponent implements OnInit {
@@ -45,7 +54,10 @@ export class ProductsComponent implements OnInit {
   products: IProduct[];
   ratingClickedMessage: string;
   starClicked: number;
-  private productService: ProductService;
+
+  constructor(private ps: ProductService) {
+    console.log('Products constructor');
+  }
 
   filter(val: any): void {
     this.filteredProducts = val ? this.performFilter(val) : this.products;
@@ -56,14 +68,9 @@ export class ProductsComponent implements OnInit {
       p.title.toLocaleLowerCase().indexOf(val) !== -1);
   }
 
-  constructor(productService: ProductService) {
-    this.productService = productService;
-    console.log('Products constructor');
-  }
-
   ngOnInit(): void {
     console.log('Products ngOnInit');
-    this.products = this.productService.getProducts();
+    this.products = this.ps.getProducts();
     this.filteredProducts = this.products;
   }
 

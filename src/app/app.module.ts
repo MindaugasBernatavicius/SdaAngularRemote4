@@ -9,6 +9,8 @@ import { ProductsComponent } from './components/products/products.component';
 import { ConverttospacePipe } from './pipes/converttospace.pipe';
 import { HomeComponent } from './components/home/home.component';
 import { StarComponent } from './components/star/star.component';
+import { RouterModule } from '@angular/router';
+import { AboutComponent } from './components/about/about.component';
 
 @NgModule({
   declarations: [
@@ -19,10 +21,17 @@ import { StarComponent } from './components/star/star.component';
     ConverttospacePipe,
     HomeComponent,
     StarComponent,
+    AboutComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
+    RouterModule.forRoot([
+      { path: 'about', component: AboutComponent },
+      { path: 'home', component: HomeComponent },
+      { path: 'products', component: ProductsComponent },
+      { path: '**', redirectTo: 'home', pathMatch: 'full' },
+    ])
   ],
   providers: [],
   bootstrap: [AppComponent]
