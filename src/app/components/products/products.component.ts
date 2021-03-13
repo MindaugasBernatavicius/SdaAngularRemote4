@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {IProduct} from '../../models/IProduct';
 import {ProductService} from '../../services/product.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-products',
@@ -9,6 +10,10 @@ import {ProductService} from '../../services/product.service';
     // 'tbody { font-family: Verdana, Geneva, sans-serif; }'
   ],
   template: `
+    <div *ngIf="error" class="alert alert-danger" role="alert">
+      <div>{{ error }}</div>
+    </div>
+
     <label>Filter:</label>
     <input type="text" (input)="filter($event.target.value)">
 
@@ -17,7 +22,7 @@ import {ProductService} from '../../services/product.service';
         Products table
       </div>
       <div class="card-body">
-        <table *ngIf="products && products.length" class="table">
+        <table *ngIf="products && products.length" class="table table-hover">
           <thead>
           <tr>
             <th>Title</th>
@@ -28,7 +33,9 @@ import {ProductService} from '../../services/product.service';
           </thead>
           <tbody>
           <tr *ngFor='let product of filteredProducts'>
-            <td>{{ product.title | lowercase | converttospace: '-' | converttospace: '$' }}</td>
+            <td><a [routerLink]="['/products', product.id]">
+              {{ product.title | lowercase | converttospace: '-' | converttospace: '$' }}
+            </a></td>
             <td>{{ product.count }}</td>
             <td>{{ product.price | currency:'EUR' }}</td>
             <!-- parent -->
@@ -54,9 +61,13 @@ export class ProductsComponent implements OnInit {
   products: IProduct[];
   ratingClickedMessage: string;
   starClicked: number;
+  error: string;
 
-  constructor(private ps: ProductService) {
+  constructor(private ps: ProductService, private router: Router) {
     console.log('Products constructor');
+
+    // ... we are using the Safe Navigation Operator / Elvis operator to prevent null derefencing → x?.y
+    this.error = this.router.getCurrentNavigation().extras.state?.error;
   }
 
   filter(val: any): void {
