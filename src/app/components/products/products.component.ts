@@ -10,8 +10,8 @@ import {Router} from '@angular/router';
     // 'tbody { font-family: Verdana, Geneva, sans-serif; }'
   ],
   template: `
-    <div *ngIf="error" class="alert alert-danger" role="alert">
-      <div>{{ error }}</div>
+    <div *ngIf="errorReturned || errorMsg" class="alert alert-danger" role="alert">
+      <div>{{ errorMsg }}</div>
     </div>
 
     <label>Filter:</label>
@@ -29,6 +29,7 @@ import {Router} from '@angular/router';
             <th>Count</th>
             <th>Price</th>
             <th>Stars</th>
+            <th>Actions</th>
           </tr>
           </thead>
           <tbody>
@@ -45,6 +46,7 @@ import {Router} from '@angular/router';
               (startClicked)="onStartClicked($event)"
             >
             </app-star></td>
+            <td><button (click)="onDeleteClicked(product.id)" class="btn btn-outline-danger">Delete</button></td>
           </tr>
           </tbody>
         </table>
@@ -61,13 +63,14 @@ export class ProductsComponent implements OnInit {
   products: IProduct[];
   ratingClickedMessage: string;
   starClicked: number;
-  error: string;
+  errorReturned: boolean;
+  errorMsg: string;
 
   constructor(private ps: ProductService, private router: Router) {
     console.log('Products constructor');
 
     // ... we are using the Safe Navigation Operator / Elvis operator to prevent null derefencing → x?.y
-    this.error = this.router.getCurrentNavigation().extras.state?.error;
+    this.errorMsg = this.router.getCurrentNavigation().extras.state?.error;
   }
 
   filter(val: any): void {
@@ -81,8 +84,18 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('Products ngOnInit');
-    this.products = this.ps.getProducts();
-    this.filteredProducts = this.products;
+    // this.products = this.ps.getProducts();
+    this.ps.getProducts().subscribe(
+      res => {
+        // console.log(res);
+        this.products = res;
+        this.filteredProducts = this.products;
+      },
+      err => {
+        this.errorReturned = true;
+        this.errorMsg = err.message;
+      }
+    );
   }
 
   onRatingClicked($event: string): void {
@@ -91,5 +104,19 @@ export class ProductsComponent implements OnInit {
 
   onStartClicked($event: number): void {
     this.starClicked = $event;
+  }
+
+  onDeleteClicked(id: number): void {
+    this.ps.deleteProductById(id).subscribe(
+      res => {
+        console.log(res);
+        this.filteredProducts = this.filteredProducts
+          .filter((product: IProduct) => product.id !== id);
+      },
+      err => {
+        this.errorReturned = true;
+        this.errorMsg = err.message;
+      }
+    );
   }
 }
