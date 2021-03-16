@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {IProduct} from '../../models/IProduct';
 import {ProductService} from '../../services/product.service';
 import {Router} from '@angular/router';
+import {NgForm} from '@angular/forms';
 
 @Component({
   selector: 'app-products',
@@ -46,7 +47,10 @@ import {Router} from '@angular/router';
               (startClicked)="onStartClicked($event)"
             >
             </app-star></td>
-            <td><button (click)="onDeleteClicked(product.id)" class="btn btn-outline-danger">Delete</button></td>
+            <td>
+              <button (click)="onDeleteClicked(product.id)" class="btn btn-outline-danger">Delete</button>
+              <a class="btn btn-outline-warning" [routerLink]="['/products', product.id]">Edit</a>
+            </td>
           </tr>
           </tbody>
         </table>
@@ -54,6 +58,31 @@ import {Router} from '@angular/router';
       <div class="card-footer">
         {{ ratingClickedMessage }}<br>
         {{ 'Star: ' + starClicked + ' clicked' }}
+      </div>
+    </div>
+    <br>
+    <div class="card">
+      <div class="card-header">Add new product</div>
+      <div class="card-body">
+        <form class="form-inline" #f="ngForm" (ngSubmit)="onCreateProductSubmit(f)">
+          <div class="form-group mb-2">
+            <label>Title</label>
+            <input name="title" type="text" class="form-control" ngModel>
+          </div>
+          <div class="form-group mb-2">
+            <label>Count</label>
+            <input name="count" type="number" class="form-control" ngModel>
+          </div>
+          <div class="form-group mb-2">
+            <label>Price</label>
+            <input name="price" type="number" class="form-control" ngModel>
+          </div>
+          <div class="form-group mb-2">
+            <label>Rating</label>
+            <input name="rating" type="number" class="form-control" ngModel>
+          </div>
+          <button type="submit" class="btn btn-primary mb-2">Submit</button>
+        </form>
       </div>
     </div>
   `
@@ -85,6 +114,10 @@ export class ProductsComponent implements OnInit {
   ngOnInit(): void {
     console.log('Products ngOnInit');
     // this.products = this.ps.getProducts();
+    this.loadProducts();
+  }
+
+  loadProducts(): void {
     this.ps.getProducts().subscribe(
       res => {
         // console.log(res);
@@ -113,6 +146,17 @@ export class ProductsComponent implements OnInit {
         this.filteredProducts = this.filteredProducts
           .filter((product: IProduct) => product.id !== id);
       },
+      err => {
+        this.errorReturned = true;
+        this.errorMsg = err.message;
+      }
+    );
+  }
+
+  onCreateProductSubmit(f: NgForm): void {
+    // console.log(f.value);
+    this.ps.createProduct(f.value).subscribe(
+      res => this.loadProducts(),
       err => {
         this.errorReturned = true;
         this.errorMsg = err.message;

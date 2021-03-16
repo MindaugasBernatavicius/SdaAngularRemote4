@@ -52,4 +52,14 @@ export class ProductService {
   deleteProductById(id: number): Observable<void> {
     return this.httpClient.delete<void>(this.url + '/' + id);
   }
+
+  createProduct(product: IProduct): Observable<void> {
+    console.log(product);
+    return this.httpClient.post<void>(this.url, product);
+  }
+
+  updateProduct(updatedProduct: IProduct): Observable<void> {
+    console.log(updatedProduct);
+    return this.httpClient.put<void>(this.url + '/' + updatedProduct.id, updatedProduct);
+  }
 }
