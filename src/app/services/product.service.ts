@@ -60,6 +60,6 @@ export class ProductService {
 
   updateProduct(updatedProduct: IProduct): Observable<void> {
     console.log(updatedProduct);
-    return this.httpClient.put<void>(this.url + '/' + updatedProduct.id, updatedProduct);
+    return this.httpClient.put<void>(this.url, updatedProduct);
   }
 }
